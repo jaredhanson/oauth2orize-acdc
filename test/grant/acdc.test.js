@@ -195,6 +195,50 @@ describe('grant.acdc', function() {
       });
     }); // issuing cross domain code based on response and request
     
+    describe('issuing cross domain code based on response, request, and locals', function() {
+      var response;
+      
+      before(function(done) {
+        function issue(client, user, audience, pkce, ares, areq, locals, done) {
+          if (client.id !== '1') { return done(new Error('incorrect client argument')); }
+          if (user.id !== '501') { return done(new Error('incorrect user argument')); }
+          if (audience !== 'https://server.partner.com') { return done(new Error('incorrect audience argument')); }
+          if (pkce.challenge !== 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM') { return done(new Error('incorrect pkce argument')); }
+          if (pkce.method !== 'S256') { return done(new Error('incorrect pkce argument')); }
+          if (ares.scope !== 'foo') { return done(new Error('incorrect ares argument')); }
+          if (areq.foo !== 'bar') { return done(new Error('incorrect areq argument')); }
+          if (locals.bar !== 'baz') { return done(new Error('incorrect locals argument')); }
+          
+          return done(null, 'eyJ');
+        }
+        
+        chai.oauth2orize.grant(acdc(issue))
+          .txn(function(txn) {
+            txn.client = { id: '1', name: 'OAuth Client' };
+            txn.redirectURI = 'http://www.example.com/auth/callback';
+            txn.req = {
+              audience: 'https://server.partner.com',
+              codeChallenge: 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM',
+              codeChallengeMethod: 'S256',
+              foo: 'bar'
+            };
+            txn.user = { id: '501', name: 'John Doe' };
+            txn.res = { allow: true, scope: 'foo' };
+            txn.locals = { bar: 'baz' };
+          })
+          .end(function(res) {
+            response = res;
+            done();
+          })
+          .decide();
+      });
+      
+      it('should respond', function() {
+        expect(response.statusCode).to.equal(302);
+        expect(response.getHeader('Location')).to.equal('http://www.example.com/auth/callback?code=eyJ');
+      });
+    }); // issuing cross domain code based on response, request, and locals
+    
     describe('authorization denied by user', function() {
       var response;
       
