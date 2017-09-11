@@ -1,6 +1,6 @@
 var chai = require('chai')
   , expect = require('chai').expect
-, acdc = require('../../lib/grant/acdc');
+  , acdc = require('../../lib/grant/acdc');
 
 
 describe('grant.acdc', function() {
