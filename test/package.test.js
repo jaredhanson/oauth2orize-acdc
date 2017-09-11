@@ -11,4 +11,9 @@ describe('oauth2orize-acdc', function() {
     expect(pkg.grant.acdc).to.be.a('function');
   });
   
+  it('should export exchanges', function() {
+    expect(pkg.exchange).to.be.an('object');
+    expect(pkg.exchange.jwtACDC).to.be.a('function');
+  });
+  
 });
