@@ -1,7 +1,11 @@
 {
   "name": "oauth2orize-acdc",
   "version": "0.0.0",
-  "description": "ACDC",
+  "description": "Extensions to support ACDC with OAuth2orize.",
+  "keywords": [
+    "oauth2",
+    "acdc"
+  ],
   "author": {
     "name": "Jared Hanson",
     "email": "jaredhanson@gmail.com",
