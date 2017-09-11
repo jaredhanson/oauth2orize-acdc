@@ -9,6 +9,12 @@ describe('exchange.jwt-acdc', function() {
     expect(acdc(function(){}).name).to.equal('');
   });
   
+  it('should throw if constructed without a issue callback', function() {
+    expect(function() {
+      acdc();
+    }).to.throw(TypeError, 'oauth2orize.acdc exchange requires an issue callback');
+  });
+  
   describe('issuing an access token', function() {
     var response, err;
 
@@ -437,7 +443,7 @@ describe('exchange.jwt-acdc', function() {
 
     before(function(done) {
       function issue(client, assertion, done) {
-        return done(new Error('something is horribly wrong'));
+        throw new Error('something is horribly wrong');
       }
       
       chai.connect.use(acdc(issue))
