@@ -68,6 +68,18 @@ server.exchange('urn:ietf:params:oauth:grant-type:jwt-acdc', acdc.exchange.jwtAC
 }));
 ```
 
+## Considerations
+
+#### Specification
+
+This module is implemented based on [OAuth 2.0 Web Message Response Mode](https://tools.ietf.org/html/draft-sakimura-oauth-wmrm-00),
+draft version 01.  As a draft, the specification remains a work-in-progress and
+is *not* final.  The specification is under discussion within the Native
+Applications working group of [OpenID Foundation](http://openid.net/).
+Implementers are encouraged to track the progress of this specification and
+update implementations as necessary.  Furthermore, the implications of relying
+on non-final specifications should be understood prior to deployment.
+
 ## Contributing
 
 #### Tests
