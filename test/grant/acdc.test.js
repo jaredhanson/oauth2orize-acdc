@@ -670,6 +670,46 @@ describe('grant.acdc', function() {
       });
     }); // generic error
     
+    describe('generic error along with state', function() {
+      var response;
+      
+      before(function(done) {
+        function issue(client, user, audience, pkce, done) {
+          return done(null, '.ignore');
+        }
+        
+        chai.oauth2orize.grant(acdc(issue))
+          .txn(function(txn) {
+            txn.client = { id: '1', name: 'OAuth Client' };
+            txn.redirectURI = 'http://www.example.com/auth/callback';
+            txn.req = {
+              audience: 'https://server.partner.com',
+              codeChallenge: 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM',
+              codeChallengeMethod: 'S256',
+              state: 's1s2s3'
+            };
+            txn.user = { id: '501', name: 'John Doe' };
+            txn.res = { allow: true };
+          })
+          .end(function(res) {
+            response = res;
+            done();
+          })
+          .error(new Error('something went wrong'));
+      });
+      
+      it('should respond', function() {
+        expect(response.statusCode).to.equal(302);
+        expect(response.getHeader('Location')).to.equal('http://www.example.com/auth/callback?error=server_error&error_description=something%20went%20wrong&state=s1s2s3');
+        expect(response.getHeader('Content-Type')).to.be.undefined;
+        expect(response.getHeader('WWW-Authenticate')).to.be.undefined;
+      });
+      
+      it('should not set response body', function() {
+        expect(response.body).to.be.undefined;
+      });
+    }); // generic error along with state
+    
     describe('authorization error', function() {
       var response;
       
@@ -708,6 +748,45 @@ describe('grant.acdc', function() {
         expect(response.body).to.be.undefined;
       });
     }); // authorization error
+    
+    describe('authorization error with URI', function() {
+      var response;
+      
+      before(function(done) {
+        function issue(client, user, audience, pkce, done) {
+          return done(null, '.ignore');
+        }
+        
+        chai.oauth2orize.grant(acdc(issue))
+          .txn(function(txn) {
+            txn.client = { id: '1', name: 'OAuth Client' };
+            txn.redirectURI = 'http://www.example.com/auth/callback';
+            txn.req = {
+              audience: 'https://server.partner.com',
+              codeChallenge: 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM',
+              codeChallengeMethod: 'S256'
+            };
+            txn.user = { id: '501', name: 'John Doe' };
+            txn.res = { allow: true };
+          })
+          .end(function(res) {
+            response = res;
+            done();
+          })
+          .error(new AuthorizationError('not authorized', 'unauthorized_client', 'http://example.com/errors/2'));
+      });
+      
+      it('should respond', function() {
+        expect(response.statusCode).to.equal(302);
+        expect(response.getHeader('Location')).to.equal('http://www.example.com/auth/callback?error=unauthorized_client&error_description=not%20authorized&error_uri=http%3A%2F%2Fexample.com%2Ferrors%2F2');
+        expect(response.getHeader('Content-Type')).to.be.undefined;
+        expect(response.getHeader('WWW-Authenticate')).to.be.undefined;
+      });
+      
+      it('should not set response body', function() {
+        expect(response.body).to.be.undefined;
+      });
+    }); // authorization error with URI
     
   }); // error handling
   
