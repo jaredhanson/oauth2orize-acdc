@@ -788,6 +788,159 @@ describe('grant.acdc', function() {
       });
     }); // authorization error with URI
     
+    describe('attempting to respond without redirect URL', function() {
+      var response, err;
+      
+      before(function(done) {
+        function issue(client, user, audience, pkce, done) {
+          return done(null, '.ignore');
+        }
+        
+        chai.oauth2orize.grant(acdc(issue))
+          .txn(function(txn) {
+            txn.client = { id: '1', name: 'OAuth Client' };
+            txn.req = {
+              audience: 'https://server.partner.com',
+              codeChallenge: 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM',
+              codeChallengeMethod: 'S256'
+            };
+            txn.user = { id: '501', name: 'John Doe' };
+            txn.res = { allow: true };
+          })
+          .next(function(e) {
+            err = e;
+            done();
+          })
+          .error(new Error('something went wrong'));
+      });
+      
+      it('should error', function() {
+        expect(err).to.be.an.instanceOf(Error);
+        expect(err.message).to.equal('something went wrong');
+      });
+    }); // attempting to respond without redirect URL
+    
+    describe('with response mode', function() {
+      function issue(client, user, audience, pkce, done) {
+        return done(null, '.ignore');
+      }
+      
+      var otherResponseMode = function(txn, res, params) {
+        expect(txn.redirectURI).to.equal('http://www.example.com/auth/callback');
+        
+        res.redirect('/other_response_mode');
+      }
+      
+      
+      describe('using default response mode', function() {
+        var response;
+      
+        before(function(done) {
+          chai.oauth2orize.grant(acdc({ modes: { other: otherResponseMode } }, issue))
+            .txn(function(txn) {
+              txn.client = { id: '1', name: 'OAuth Client' };
+              txn.redirectURI = 'http://www.example.com/auth/callback';
+              txn.req = {
+                audience: 'https://server.partner.com',
+                codeChallenge: 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM',
+                codeChallengeMethod: 'S256',
+                state: 's1t2u3'
+              };
+              txn.user = { id: '501', name: 'John Doe' };
+              txn.res = { allow: true };
+            })
+            .end(function(res) {
+              response = res;
+              done();
+            })
+            .error(new AuthorizationError('not authorized', 'unauthorized_client'));
+        });
+      
+        it('should respond', function() {
+          expect(response.statusCode).to.equal(302);
+          expect(response.getHeader('Location')).to.equal('http://www.example.com/auth/callback?error=unauthorized_client&error_description=not%20authorized&state=s1t2u3');
+          expect(response.getHeader('Content-Type')).to.be.undefined;
+          expect(response.getHeader('WWW-Authenticate')).to.be.undefined;
+        });
+      
+        it('should not set response body', function() {
+          expect(response.body).to.be.undefined;
+        });
+      }); //using default response mode
+      
+      describe('using other response mode', function() {
+        var response;
+      
+        before(function(done) {
+          chai.oauth2orize.grant(acdc({ modes: { other: otherResponseMode } }, issue))
+            .txn(function(txn) {
+              txn.client = { id: '1', name: 'OAuth Client' };
+              txn.redirectURI = 'http://www.example.com/auth/callback';
+              txn.req = {
+                responseMode: 'other',
+                audience: 'https://server.partner.com',
+                codeChallenge: 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM',
+                codeChallengeMethod: 'S256',
+                state: 's1t2u3'
+              };
+              txn.user = { id: '501', name: 'John Doe' };
+              txn.res = { allow: true };
+            })
+            .end(function(res) {
+              response = res;
+              done();
+            })
+            .error(new AuthorizationError('not authorized', 'unauthorized_client'));
+        });
+      
+        it('should respond', function() {
+          expect(response.statusCode).to.equal(302);
+          expect(response.getHeader('Location')).to.equal('/other_response_mode');
+          expect(response.getHeader('Content-Type')).to.be.undefined;
+          expect(response.getHeader('WWW-Authenticate')).to.be.undefined;
+        });
+      
+        it('should not set response body', function() {
+          expect(response.body).to.be.undefined;
+        });
+      }); //using other response mode
+      
+      describe('using unsupported response mode', function() {
+        var response, err;
+      
+        before(function(done) {
+          chai.oauth2orize.grant(acdc({ modes: { other: otherResponseMode } }, issue))
+            .txn(function(txn) {
+              txn.client = { id: '1', name: 'OAuth Client' };
+              txn.redirectURI = 'http://www.example.com/auth/callback';
+              txn.req = {
+                responseMode: 'unsupported',
+                audience: 'https://server.partner.com',
+                codeChallenge: 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM',
+                codeChallengeMethod: 'S256',
+                state: 's1t2u3'
+              };
+              txn.user = { id: '501', name: 'John Doe' };
+              txn.res = { allow: true };
+            })
+            .next(function(e) {
+              err = e;
+              done();
+            })
+            .error(new AuthorizationError('not authorized', 'unauthorized_client'));
+        });
+      
+        it('should error', function() {
+          expect(err).to.be.an.instanceOf(Error);
+          expect(err.constructor.name).to.equal('AuthorizationError');
+          expect(err.message).to.equal('not authorized');
+          expect(err.code).to.equal('unauthorized_client');
+          expect(err.status).to.equal(403);
+        });
+      }); //using unsupported response mode
+      
+    }); // with response mode
+    
   }); // error handling
   
   
