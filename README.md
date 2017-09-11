@@ -1,5 +1,21 @@
 # oauth2orize-acdc
 
+[OAuth2orize](https://github.com/jaredhanson/oauth2orize) extensions providing
+support for [Authorization Cross Domain Code](https://openid.bitbucket.io/draft-acdc-01.html).
+
+ACDC provides an authorization grant that decouples authorization from access
+token issuance.  An authorization server is used to obtain authorization, which
+is represented in the form of an authorization cross domain code.  This cross
+domain code can be exchanged for an access token at an authorization server that
+exists within a separate domain (provided appropriate level of trust has been
+established).
+
+This functionality allows for a formn federation in which an access tokens are
+issued by a single authoritative authorization server, while authorization (and
+consent) can be obtained from an external authorization server.  Such a
+deployment model is particularly relevant to SaaS providers that offer business
+solutions.
+
 ## Install
 
     $ npm install oauth2orize-acdc
