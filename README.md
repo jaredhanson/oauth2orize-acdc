@@ -10,7 +10,7 @@ domain code can be exchanged for an access token at an authorization server that
 exists within a separate domain (provided appropriate level of trust has been
 established).
 
-This functionality allows for a formn federation in which an access tokens are
+This functionality allows for a form of federation in which an access tokens are
 issued by a single authoritative authorization server, while authorization (and
 consent) can be obtained from an external authorization server.  Such a
 deployment model is particularly relevant to SaaS providers that offer business
