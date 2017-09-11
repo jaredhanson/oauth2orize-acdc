@@ -186,7 +186,7 @@ describe('exchange.jwt-acdc', function() {
       function issue(client, assertion, verifier, done) {
         if (client.id !== '1') { return done(new Error('incorrect client argument')); }
         if (assertion !== 'eyJ') { return done(new Error('incorrect code argument')); }
-        if (verifier !== 'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk') { return done(new Error('incorrect code argument')); }
+        if (verifier !== 'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk') { return done(new Error('incorrect verifier argument')); }
         
         return done(null, 's3cr1t');
       }
@@ -221,7 +221,7 @@ describe('exchange.jwt-acdc', function() {
       function issue(client, assertion, verifier, done) {
         if (client.id !== '1') { return done(new Error('incorrect client argument')); }
         if (assertion !== 'eyJ') { return done(new Error('incorrect code argument')); }
-        if (verifier !== 'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk') { return done(new Error('incorrect code argument')); }
+        if (verifier !== 'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk') { return done(new Error('incorrect verifier argument')); }
         
         return done(null, 's3cr1t');
       }
@@ -230,6 +230,80 @@ describe('exchange.jwt-acdc', function() {
         .req(function(req) {
           req.user = { id: '1', name: 'OAuth Client' };
           req.body = { assertion: 'eyJ', code_verifyer: 'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk' };
+        })
+        .end(function(res) {
+          response = res;
+          done();
+        })
+        .dispatch();
+    });
+    
+    it('should respond with headers', function() {
+      expect(response.getHeader('Content-Type')).to.equal('application/json');
+      expect(response.getHeader('Cache-Control')).to.equal('no-store');
+      expect(response.getHeader('Pragma')).to.equal('no-cache');
+    });
+    
+    it('should respond with body', function() {
+      expect(response.body).to.equal('{"access_token":"s3cr1t","token_type":"Bearer"}');
+    });
+  });
+  
+  describe('issuing an access token based on verifier and body', function() {
+    var response, err;
+
+    before(function(done) {
+      function issue(client, assertion, verifier, body, done) {
+        if (client.id !== '1') { return done(new Error('incorrect client argument')); }
+        if (assertion !== 'eyJ') { return done(new Error('incorrect code argument')); }
+        if (verifier !== 'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk') { return done(new Error('incorrect verifier argument')); }
+        if (body.foo !== 'bar') { return done(new Error('incorrect body argument')); }
+        
+        return done(null, 's3cr1t');
+      }
+      
+      chai.connect.use(acdc(issue))
+        .req(function(req) {
+          req.user = { id: '1', name: 'OAuth Client' };
+          req.body = { assertion: 'eyJ', code_verifier: 'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk', foo: 'bar' };
+        })
+        .end(function(res) {
+          response = res;
+          done();
+        })
+        .dispatch();
+    });
+    
+    it('should respond with headers', function() {
+      expect(response.getHeader('Content-Type')).to.equal('application/json');
+      expect(response.getHeader('Cache-Control')).to.equal('no-store');
+      expect(response.getHeader('Pragma')).to.equal('no-cache');
+    });
+    
+    it('should respond with body', function() {
+      expect(response.body).to.equal('{"access_token":"s3cr1t","token_type":"Bearer"}');
+    });
+  });
+  
+  describe('issuing an access token based on verifier, body, and authInfo', function() {
+    var response, err;
+
+    before(function(done) {
+      function issue(client, assertion, verifier, body, authInfo, done) {
+        if (client.id !== '1') { return done(new Error('incorrect client argument')); }
+        if (assertion !== 'eyJ') { return done(new Error('incorrect code argument')); }
+        if (verifier !== 'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk') { return done(new Error('incorrect verifier argument')); }
+        if (body.foo !== 'bar') { return done(new Error('incorrect body argument')); }
+        if (authInfo.ip !== '127.0.0.1') { return done(new Error('incorrect authInfo argument')); }
+        
+        return done(null, 's3cr1t');
+      }
+      
+      chai.connect.use(acdc(issue))
+        .req(function(req) {
+          req.user = { id: '1', name: 'OAuth Client' };
+          req.body = { assertion: 'eyJ', code_verifier: 'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk', foo: 'bar' };
+          req.authInfo = { ip: '127.0.0.1' };
         })
         .end(function(res) {
           response = res;
