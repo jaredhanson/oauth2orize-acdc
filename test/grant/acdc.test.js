@@ -475,6 +475,157 @@ describe('grant.acdc', function() {
       });
     }); // encountering an error while completing transaction
     
+    describe('with response mode', function() {
+      function issue(client, user, audience, pkce, done) {
+        return done(null, 'eyJ');
+      }
+    
+      var otherResponseMode = function(txn, res, params) {
+        expect(txn.redirectURI).to.equal('http://www.example.com/auth/callback');
+        expect(params.code).to.equal('eyJ');
+        expect(params.state).to.equal('s1t2u3');
+      
+        res.redirect('/other_response_mode');
+      }
+      
+      describe('issuing cross domain code using default response mode', function() {
+        var response;
+      
+        before(function(done) {
+        
+          chai.oauth2orize.grant(acdc({ modes: { other: otherResponseMode } }, issue))
+            .txn(function(txn) {
+              txn.client = { id: '1', name: 'OAuth Client' };
+              txn.redirectURI = 'http://www.example.com/auth/callback';
+              txn.req = {
+                audience: 'https://server.partner.com',
+                codeChallenge: 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM',
+                codeChallengeMethod: 'S256',
+                state: 's1t2u3'
+              };
+              txn.user = { id: '501', name: 'John Doe' };
+              txn.res = { allow: true };
+            })
+            .end(function(res) {
+              response = res;
+              done();
+            })
+            .decide();
+        });
+      
+        it('should respond', function() {
+          expect(response.statusCode).to.equal(302);
+          expect(response.getHeader('Location')).to.equal('http://www.example.com/auth/callback?code=eyJ&state=s1t2u3');
+        });
+      }); // issuing cross domain code using default response mode
+      
+      describe('issuing cross domain code using other response mode', function() {
+        var response;
+      
+        before(function(done) {
+          chai.oauth2orize.grant(acdc({ modes: { other: otherResponseMode } }, issue))
+            .txn(function(txn) {
+              txn.client = { id: '1', name: 'OAuth Client' };
+              txn.redirectURI = 'http://www.example.com/auth/callback';
+              txn.req = {
+                responseMode: 'other',
+                audience: 'https://server.partner.com',
+                codeChallenge: 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM',
+                codeChallengeMethod: 'S256',
+                state: 's1t2u3'
+              };
+              txn.user = { id: '501', name: 'John Doe' };
+              txn.res = { allow: true };
+            })
+            .end(function(res) {
+              response = res;
+              done();
+            })
+            .decide();
+        });
+      
+        it('should respond', function() {
+          expect(response.statusCode).to.equal(302);
+          expect(response.getHeader('Location')).to.equal('/other_response_mode');
+        });
+      }); // issuing cross domain code using other response mode
+      
+      describe('authorization denied by user using other response mode', function() {
+        var response;
+      
+        before(function(done) {
+          var otherResponseMode = function(txn, res, params) {
+            expect(txn.redirectURI).to.equal('http://www.example.com/auth/callback');
+            expect(params.error).to.equal('access_denied');
+            expect(params.state).to.equal('s1t2u3');
+      
+            res.redirect('/other_response_mode');
+          }
+        
+          chai.oauth2orize.grant(acdc({ modes: { other: otherResponseMode } }, issue))
+            .txn(function(txn) {
+              txn.client = { id: '1', name: 'OAuth Client' };
+              txn.redirectURI = 'http://www.example.com/auth/callback';
+              txn.req = {
+                responseMode: 'other',
+                audience: 'https://server.partner.com',
+                codeChallenge: 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM',
+                codeChallengeMethod: 'S256',
+                state: 's1t2u3'
+              };
+              txn.user = { id: '501', name: 'John Doe' };
+              txn.res = { allow: false };
+            })
+            .end(function(res) {
+              response = res;
+              done();
+            })
+            .decide();
+        });
+      
+        it('should respond', function() {
+          expect(response.statusCode).to.equal(302);
+          expect(response.getHeader('Location')).to.equal('/other_response_mode');
+        });
+      }); // authorization denied by user using other response mode
+      
+      describe('using unsupported response mode', function() {
+        var err;
+      
+        before(function(done) {
+          chai.oauth2orize.grant(acdc({ modes: { other: otherResponseMode } }, issue))
+            .txn(function(txn) {
+              txn.client = { id: '1', name: 'OAuth Client' };
+              txn.redirectURI = 'http://www.example.com/auth/callback';
+              txn.req = {
+                responseMode: 'unsupported',
+                audience: 'https://server.partner.com',
+                codeChallenge: 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM',
+                codeChallengeMethod: 'S256',
+                state: 's1t2u3'
+              };
+              txn.user = { id: '501', name: 'John Doe' };
+              txn.res = { allow: true };
+            })
+            .next(function(e) {
+              err = e;
+              done();
+            })
+            .decide();
+        });
+      
+        it('should error', function() {
+          expect(err).to.be.an.instanceOf(Error);
+          expect(err.constructor.name).to.equal('AuthorizationError');
+          expect(err.message).to.equal('Unsupported response mode: unsupported');
+          expect(err.code).to.equal('unsupported_response_mode');
+          expect(err.uri).to.equal(null);
+          expect(err.status).to.equal(501);
+        });
+      }); // using unsupported response mode
+      
+    }) // with response mode
+    
   }); // decision processing
   
 });
