@@ -28,6 +28,84 @@ describe('grant.acdc', function() {
   
   
   describe('request parsing', function() {
+    function issue(){};
+    
+    describe('request with necessary parameters', function() {
+      var err, out;
+      
+      before(function(done) {
+        chai.oauth2orize.grant(acdc(issue))
+          .req(function(req) {
+            req.query = {};
+            req.query.aud = 'https://server.partner.com';
+            req.query.code_challenge = 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM';
+          })
+          .parse(function(e, o) {
+            err = e;
+            out = o;
+            done();
+          })
+          .authorize();
+      });
+      
+      it('should not error', function() {
+        expect(err).to.be.null;
+      });
+      
+      it('should not parse request', function() {
+        expect(out).to.be.undefined;
+      });
+    });
+    
+    describe('request without aud parameter', function() {
+      var err, out;
+      
+      before(function(done) {
+        chai.oauth2orize.grant(acdc(issue))
+          .req(function(req) {
+            req.query = {};
+            req.query.code_challenge = 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM';
+          })
+          .parse(function(e, o) {
+            err = e;
+            out = o;
+            done();
+          })
+          .authorize();
+      });
+      
+      it('should error', function() {
+        expect(err).to.be.an.instanceOf(Error);
+        expect(err.constructor.name).to.equal('AuthorizationError');
+        expect(err.message).to.equal('Missing required parameter: aud');
+        expect(err.code).to.equal('invalid_request');
+      });
+    });
+    
+    describe('request without code_challenge parameter', function() {
+      var err, out;
+      
+      before(function(done) {
+        chai.oauth2orize.grant(acdc(issue))
+          .req(function(req) {
+            req.query = {};
+            req.query.aud = 'https://server.partner.com';
+          })
+          .parse(function(e, o) {
+            err = e;
+            out = o;
+            done();
+          })
+          .authorize();
+      });
+      
+      it('should error', function() {
+        expect(err).to.be.an.instanceOf(Error);
+        expect(err.constructor.name).to.equal('AuthorizationError');
+        expect(err.message).to.equal('Missing required parameter: code_challenge');
+        expect(err.code).to.equal('invalid_request');
+      });
+    });
     
   }); // request parsing
   
