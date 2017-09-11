@@ -22,6 +22,52 @@ solutions.
 
 ## Usage
 
+#### Register Extensions
+
+ACDC depends on audience indicators and PKCE.  These extensions must be
+registered independently by requiring [oauth2orize-audience](https://github.com/jaredhanson/oauth2orize-audience)
+and [oauth2orize-pkce](https://github.com/jaredhanson/oauth2orize-pkce):
+
+```js
+server.grant(require('oauth2orize-audience').extensions());
+server.grant(require('oauth2orize-pkce').extensions());
+```
+
+#### Register ACDC Grant
+
+A client will request an ACDC grant by setting `response_type` to `acdc` in an
+authorization request.  In order to issue such a grant, register the grant with
+a `Server` instance, and implement the `issue` callback:
+
+```javascript
+var acdc = require('oauth2orize-acdc');
+
+server.grant(acdc.grant.acdc(function(client, user, audience, pkce, cb) {
+  // TODO: Issue a ACDC code in JWT format.
+  var code = generate(...);
+  return cb(null, code);
+}));
+```
+
+#### Register ACDC Exchange
+
+Once a client has obtained an ACDC code, it can be exchanged for an access
+token.  In order to issue the access token, register the exchange with a
+`Server` instance and implement the `issue` callback:
+
+```javascript
+var acdc = require('oauth2orize-acdc');
+
+server.exchange('urn:ietf:params:oauth:grant-type:jwt-acdc', acdc.exchange.jwtACDC(function(client, acdc, verifier, cb) {
+  // TODO: Verify ACDC code and issue access token
+  verify(acdc, verifier, function(err) {
+    if (err) { return cb(err); }
+    var token = generate(...);
+    return cb(null, token);
+  });
+}));
+```
+
 ## Contributing
 
 #### Tests
