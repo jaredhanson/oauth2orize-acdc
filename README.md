@@ -72,13 +72,13 @@ server.exchange('urn:ietf:params:oauth:grant-type:jwt-acdc', acdc.exchange.jwtAC
 
 #### Specification
 
-This module is implemented based on [Authorization Cross Domain Code 1.0](https://openid.bitbucket.io/draft-acdc-01.html),
-draft version 01.  As a draft, the specification remains a work-in-progress and
-is *not* final.  The specification is under discussion within the [Native
-Applications](http://openid.net/wg/napps/) working group of [OpenID Foundation](http://openid.net/).
-Implementers are encouraged to track the progress of this specification and
-update implementations as necessary.  Furthermore, the implications of relying
-on non-final specifications should be understood prior to deployment.
+This module is implemented based on a draft of [Authorization Cross Domain Code 1.0](https://openid.bitbucket.io/draft-acdc-01.html),
+As a draft, the specification remains a work-in-progress and is *not* final.
+The specification is under discussion within the [Native Applications](http://openid.net/wg/napps/)
+working group of [OpenID Foundation](http://openid.net/).  Implementers are
+encouraged to track the progress of this specification and update
+implementations as necessary.  Furthermore, the implications of relying on
+non-final specifications should be understood prior to deployment.
 
 ## Contributing
 
