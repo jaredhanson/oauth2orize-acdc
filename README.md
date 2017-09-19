@@ -80,29 +80,6 @@ encouraged to track the progress of this specification and update
 implementations as necessary.  Furthermore, the implications of relying on
 non-final specifications should be understood prior to deployment.
 
-## Contributing
-
-#### Tests
-
-The test suite is located in the `test/` directory.  All new features are
-expected to have corresponding test cases.  Ensure that the complete test suite
-passes by executing:
-
-```bash
-$ make test
-```
-
-#### Coverage
-
-All new feature development is expected to have test coverage.  Patches that
-increse test coverage are happily accepted.  Coverage reports can be viewed by
-executing:
-
-```bash
-$ make test-cov
-$ make view-cov
-```
-
 ## Support
 
 #### Funding
