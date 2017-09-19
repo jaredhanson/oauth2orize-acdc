@@ -18,7 +18,9 @@ solutions.
 
 ## Install
 
-    $ npm install oauth2orize-acdc
+```bash
+$ npm install oauth2orize-acdc
+```
 
 ## Usage
 
@@ -39,12 +41,12 @@ A client will request an ACDC grant by setting `response_type` to `acdc` in an
 authorization request.  In order to issue such a grant, register the grant with
 a `Server` instance, and implement the `issue` callback:
 
-```javascript
+```js
 var acdc = require('oauth2orize-acdc');
 
 server.grant(acdc.grant.acdc(function(client, user, audience, pkce, cb) {
   // TODO: Issue a ACDC code in JWT format.
-  var code = generate(...);
+  var code = issueACDCCode(...);
   return cb(null, code);
 }));
 ```
@@ -55,16 +57,15 @@ Once a client has obtained an ACDC code, it can be exchanged for an access
 token.  In order to issue the access token, register the exchange with a
 `Server` instance and implement the `issue` callback:
 
-```javascript
+```js
 var acdc = require('oauth2orize-acdc');
 
-server.exchange('urn:ietf:params:oauth:grant-type:jwt-acdc', acdc.exchange.jwtACDC(function(client, acdc, verifier, cb) {
-  // TODO: Verify ACDC code and issue access token
-  verify(acdc, verifier, function(err) {
-    if (err) { return cb(err); }
-    var token = generate(...);
-    return cb(null, token);
-  });
+server.exchange('urn:ietf:params:oauth:grant-type:jwt-acdc', acdc.exchange.jwtACDC(function(client, code, verifier, cb) {
+  // TODO:
+  // 1. Verify the ACDC code.
+  // 2. Issue an access token.
+  var token = issueAccessToken(...);
+  return cb(null, token);
 }));
 ```
 
@@ -79,19 +80,6 @@ working group of [OpenID Foundation](http://openid.net/).  Implementers are
 encouraged to track the progress of this specification and update
 implementations as necessary.  Furthermore, the implications of relying on
 non-final specifications should be understood prior to deployment.
-
-## Support
-
-#### Funding
-
-This software is provided to you as open source, free of charge.  The time and
-effort to develop and maintain this project is volunteered by [@jaredhanson](https://github.com/jaredhanson).
-If you (or your employer) benefit from this project, please consider a financial
-contribution.  Your contribution helps continue the efforts that produce this
-and other open source software.
-
-Funds are accepted via [PayPal](https://paypal.me/jaredhanson), [Venmo](https://venmo.com/jaredhanson),
-and [other](http://jaredhanson.net/pay) methods.  Any amount is appreciated.
 
 ## License
 
