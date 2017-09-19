@@ -1,5 +1,12 @@
 # oauth2orize-acdc
 
+[![Version](https://img.shields.io/npm/v/oauth2orize-acdc.svg?label=version)](https://www.npmjs.com/package/oauth2orize-acdc)
+[![Build](https://img.shields.io/travis/jaredhanson/oauth2orize-acdc.svg)](https://travis-ci.org/jaredhanson/oauth2orize-acdc)
+[![Quality](https://img.shields.io/codeclimate/github/jaredhanson/oauth2orize-acdc.svg?label=quality)](https://codeclimate.com/github/jaredhanson/oauth2orize-acdc)
+[![Coverage](https://img.shields.io/coveralls/jaredhanson/oauth2orize-acdc.svg)](https://coveralls.io/r/jaredhanson/oauth2orize-acdc)
+[![Dependencies](https://img.shields.io/david/jaredhanson/oauth2orize-acdc.svg)](https://david-dm.org/jaredhanson/oauth2orize-acdc)
+
+
 [OAuth2orize](https://github.com/jaredhanson/oauth2orize) extensions providing
 support for [Authorization Cross Domain Code](https://openid.bitbucket.io/draft-acdc-01.html).
 
