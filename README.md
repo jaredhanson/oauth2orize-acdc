@@ -52,7 +52,7 @@ a `Server` instance, and implement the `issue` callback:
 var acdc = require('oauth2orize-acdc');
 
 server.grant(acdc.grant.acdc(function(client, user, audience, pkce, cb) {
-  // TODO: Issue a ACDC code in JWT format.
+  // TODO: Issue an ACDC code in JWT format.
   var code = issueACDCCode(...);
   return cb(null, code);
 }));
@@ -69,8 +69,12 @@ var acdc = require('oauth2orize-acdc');
 
 server.exchange('urn:ietf:params:oauth:grant-type:jwt-acdc', acdc.exchange.jwtACDC(function(client, code, verifier, cb) {
   // TODO:
-  // 1. Verify the ACDC code.
-  // 2. Issue an access token.
+  // 1. Verify the ACDC code, ensuring that it was issued by an authorization
+  //    server with which a trust relationship has been established.
+  // 2. Verify that the ACDC code is being exchanged by the client to which it
+  //    was issued, by means of PKCE.
+  // 3. Issue an access token with the scope granted during the authorization
+  //    request.
   var token = issueAccessToken(...);
   return cb(null, token);
 }));
