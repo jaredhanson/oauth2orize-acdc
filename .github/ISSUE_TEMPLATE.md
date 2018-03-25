@@ -11,8 +11,6 @@ please post a question on the discussion forum <https://github.com/jaredhanson/o
 rather than filing an issue.
 
 
-#### Are you requesting a feature?
-
 
 
 
