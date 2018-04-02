@@ -43,4 +43,5 @@ in order to mitigate negative consequences.
 
 * __Operating System__: 
 * __Node version__: <!-- $ node -v -->
+* __oauth2orize version__: <!-- $ npm list oauth2orize -->
 * __oauth2orize-acdc version__: <!-- $ npm list oauth2orize-acdc -->
