@@ -41,7 +41,7 @@ in order to mitigate negative consequences.
 
 ### Environment
 
-* __Operating System__: 
-* __Node version__: <!-- $ node -v -->
-* __oauth2orize version__: <!-- $ npm list oauth2orize -->
-* __oauth2orize-acdc version__: <!-- $ npm list oauth2orize-acdc -->
+* Operating System: 
+* Node version: <!-- $ node -v -->
+* oauth2orize version: <!-- $ npm list oauth2orize -->
+* oauth2orize-acdc version: <!-- $ npm list oauth2orize-acdc -->
