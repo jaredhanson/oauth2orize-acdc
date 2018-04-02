@@ -19,12 +19,28 @@ responsible manner.  This also allows time for coordinating with affected partie
 in order to mitigate negative consequences.
 
 
+<!-- Provide a brief summary of the issue in the title field above. -->
 
-
-
+<!-- Provide a detailed description of your use case, including as much detail -->
+<!-- as possible about what you are trying to accomplish and why. -->
 
 ### Expected behavior
+<!-- Provide a detailed description of how you expected the software to behave. -->
 
 ### Actual behavior
+<!-- Provide a detailed description of how the software actually behaved, -->
+<!-- including any rationale for why that behavior is incorrect. -->
 
 ### Steps to reproduce
+<!-- Provide an unambiguous series of steps that can be used to reproduce this -->
+<!-- issue, including any code if applicable. -->
+
+```js
+// Format code using Markdown code blocks
+```
+
+### Environment
+
+* __Operating System__: 
+* __Node version__: <!-- $ node -v -->
+* __oauth2orize-acdc version__: <!-- $ npm list oauth2orize-acdc -->
