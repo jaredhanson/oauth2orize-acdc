@@ -2,7 +2,7 @@
 
 #### Are you implementing a new feature?
 
-Requests for new features should first be discussed on the discussion forum <https://github.com/jaredhanson/oauth2orize-discuss>.
+Requests for new features should first be discussed on the [discussion forum](https://github.com/jaredhanson/oauth2orize-discuss).
 This allows the community to gather feedback and assess whether or not there is
 an existing way to achieve the desired functionality.
 
