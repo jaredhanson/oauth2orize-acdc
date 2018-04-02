@@ -22,6 +22,8 @@ affected parties in order to mitigate negative consequences.
 
 <!-- Provide a detailed description of your use case, including as much -->
 <!-- detail as possible about what you are trying to accomplish and why. -->
+<!-- If this patch closes an open issue, include a reference to the issue -->
+<!-- number. -->
 
 ### Checklist
 
