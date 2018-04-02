@@ -97,6 +97,6 @@ non-final specifications should be understood prior to deployment.
 
 [The MIT License](http://opensource.org/licenses/MIT)
 
-Copyright (c) 2016-2017 Jared Hanson <[http://jaredhanson.net/](http://jaredhanson.net/)>
+Copyright (c) 2016-2018 Jared Hanson <[http://jaredhanson.net/](http://jaredhanson.net/)>
 
 
